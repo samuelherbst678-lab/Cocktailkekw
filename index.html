@@ -42,7 +42,7 @@ input, textarea, select, button {
 }
 
 textarea {
-  min-height: 100px;
+  min-height: 110px;
   resize: vertical;
 }
 
@@ -72,7 +72,7 @@ button.secondary {
 .stars {
   display: flex;
   gap: 4px;
-  font-size: 24px;
+  font-size: 26px;
   cursor: pointer;
 }
 
@@ -269,12 +269,14 @@ function render() {
     card.className = "card";
 
     const ingr = c.ingredients.map(z =>
-      `${z.amount} ${z.unit} ${z.name}`
+      `${z.amount || ""} ${z.unit} ${z.name}`
     ).join("<br>");
 
     card.innerHTML = `
       <h2>${c.name}</h2>
-      <div class="meta">${c.type} · Farbe: ${c.color || "–"} · ⭐ ${c.rating}</div>
+      <div class="meta">
+        ${c.type} · Farbe: ${c.color || "–"} · ⭐ ${c.rating}
+      </div>
       <p><strong>Zutaten:</strong><br>${ingr}</p>
       <p><strong>Zubereitung:</strong><br>${c.instructions}</p>
       <button class="delete" onclick="deleteCocktail(${i})">Löschen</button>
