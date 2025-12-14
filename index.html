@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="UTF-8">
+<title>Cocktail Rezepte</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family: system-ui, sans-serif;
+  background: #0e0e0e;
+  color: #f2f2f2;
+  padding: 20px;
+}
+
+h1 {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.app {
+  max-width: 900px;
+  margin: auto;
+}
+
+.form {
+  background: #1a1a1a;
+  padding: 16px;
+  border-radius: 12px;
+  display: grid;
+  gap: 10px;
+}
+
+input, textarea, select, button {
+  padding: 10px;
+  border-radius: 8px;
+  border: none;
+  font-size: 14px;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 80px;
+}
+
+button {
+  background: #c9a35b;
+  color: #000;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+button:hover {
+  opacity: 0.9;
+}
+
+.list {
+  margin-top: 30px;
+  display: grid;
+  gap: 15px;
+}
+
+.card {
+  background: #1b1b1b;
+  padding: 15px;
+  border-radius: 12px;
+}
+
+.card h2 {
+  margin: 0 0 5px 0;
+}
+
+.meta {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+.ingredients {
+  margin: 10px 0;
+  font-size: 14px;
+}
+
+.instructions {
+  font-size: 14px;
+  white-space: pre-wrap;
+}
+
+.actions {
+  margin-top: 10px;
+  display: flex;
+  gap: 10px;
+}
+
+.delete {
+  background: #a33;
+  color: white;
+}
+
+.empty {
+  text-align: center;
+  opacity: 0.6;
+}
+</style>
+</head>
+
+<body>
+<div class="app">
+
+<h1>🍸 Cocktail Rezepte</h1>
+
+<div class="form">
+  <input id="name" placeholder="Name des Cocktails">
+  <input id="ingredients" placeholder="Zutaten (z. B. Vodka, Zitrone, Eis)">
+  <input id="amounts" placeholder="Mengen (z. B. 4 cl, 2 cl, nach Bedarf)">
+  <textarea id="instructions" placeholder="Zubereitung"></textarea>
+
+  <select id="type">
+    <option value="Alkoholisch">Alkoholisch</option>
+    <option value="Alkoholfrei">Alkoholfrei</option>
+  </select>
+
+  <input id="rating" type="number" min="1" max="5" placeholder="Bewertung (1–5)">
+  <button onclick="addCocktail()">Rezept speichern</button>
+</div>
+
+<div id="list" class="list"></div>
+
+</div>
+
+<script>
+let cocktails = JSON.parse(localStorage.getItem("cocktails")) || [];
+
+function save() {
+  localStorage.setItem("cocktails", JSON.stringify(cocktails));
+}
+
+function addCocktail() {
+  const cocktail = {
+    name: document.getElementById("name").value.trim(),
+    ingredients: document.getElementById("ingredients").value.trim(),
+    amounts: document.getElementById("amounts").value.trim(),
+    instructions: document.getElementById("instructions").value.trim(),
+    type: document.getElementById("type").value,
+    rating: document.getElementById("rating").value
+  };
+
+  if (!cocktail.name) {
+    alert("Name fehlt.");
+    return;
+  }
+
+  cocktails.push(cocktail);
+  save();
+  clearForm();
+  render();
+}
+
+function deleteCocktail(index) {
+  cocktails.splice(index, 1);
+  save();
+  render();
+}
+
+function clearForm() {
+  document.getElementById("name").value = "";
+  document.getElementById("ingredients").value = "";
+  document.getElementById("amounts").value = "";
+  document.getElementById("instructions").value = "";
+  document.getElementById("rating").value = "";
+}
+
+function render() {
+  const list = document.getElementById("list");
+  list.innerHTML = "";
+
+  if (cocktails.length === 0) {
+    list.innerHTML = '<div class="empty">Noch keine Cocktails gespeichert.</div>';
+    return;
+  }
+
+  cocktails.forEach((c, i) => {
+    const card = document.createElement("div");
+    card.className = "card";
+
+    card.innerHTML = `
+      <h2>${c.name}</h2>
+      <div class="meta">${c.type} · Bewertung: ${c.rating || "–"}</div>
+      <div class="ingredients"><strong>Zutaten:</strong> ${c.ingredients}</div>
+      <div class="ingredients"><strong>Mengen:</strong> ${c.amounts}</div>
+      <div class="instructions"><strong>Zubereitung:</strong><br>${c.instructions}</div>
+      <div class="actions">
+        <button class="delete" onclick="deleteCocktail(${i})">Löschen</button>
+      </div>
+    `;
+
+    list.appendChild(card);
+  });
+}
+
+render();
+</script>
+
+</body>
+</html>
